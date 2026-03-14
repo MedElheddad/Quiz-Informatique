@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QCM Informatique & Réseaux</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const questions = [
+      { num: 1, topic: "Réseau / TCP-IP", q: "Quelle est la plage d'adresses IP privées de classe B ?", opts: ["10.0.0.0 – 10.255.255.255", "172.16.0.0 – 172.31.255.255", "192.168.0.0 – 192.168.255.255", "169.254.0.0 – 169.254.255.255"], ans: 1 },
+      { num: 2, topic: "Réseau / TCP-IP", q: "Quel protocole de la couche transport garantit la livraison des paquets ?", opts: ["UDP", "ICMP", "TCP", "ARP"], ans: 2 },
+      { num: 3, topic: "Réseau / TCP-IP", q: "Combien de bits compose une adresse IPv6 ?", opts: ["32 bits", "64 bits", "128 bits", "256 bits"], ans: 2 },
+      { num: 4, topic: "Réseau / TCP-IP", q: "Quel protocole permet la résolution d'adresse IP en adresse MAC ?", opts: ["DNS", "DHCP", "RARP", "ARP"], ans: 3 },
+      { num: 5, topic: "Réseau / TCP-IP", q: "Quel est le numéro de port par défaut du protocole HTTPS ?", opts: ["80", "21", "443", "8080"], ans: 2 },
+      { num: 6, topic: "Réseau / TCP-IP", q: "Quel est le rôle du protocole OSPF ?", opts: ["Attribution d'adresses IP dynamiques", "Routage à état de lien", "Résolution de noms de domaine", "Transmission de fichiers"], ans: 1 },
+      { num: 7, topic: "Réseau / TCP-IP", q: "Quelle commande permet de tester la connectivité réseau ?", opts: ["tracert", "ipconfig", "ping", "netstat"], ans: 2 },
+      { num: 8, topic: "Windows Server / AD", q: "Quelle commande ajoute un utilisateur dans Active Directory en CLI ?", opts: ["dsadd user", "net user /add", "adduser", "useradd"], ans: 0 },
+      { num: 9, topic: "Windows Server / AD", q: "Quel outil gère les stratégies de groupe (GPO) ?", opts: ["AD Users and Computers", "Group Policy Management Console", "Server Manager", "Computer Management"], ans: 1 },
+      { num: 10, topic: "Windows Server / AD", q: "Quel rôle FSMO gère la cohérence des SID dans un domaine ?", opts: ["Schema Master", "PDC Emulator", "RID Master", "Infrastructure Master"], ans: 2 },
+      { num: 11, topic: "Windows Server / AD", q: "Quel type de zone DNS est en lecture seule ?", opts: ["Zone primaire", "Zone de stub", "Zone secondaire", "Zone intégrée AD"], ans: 2 },
+      { num: 12, topic: "Windows Server / AD", q: "Un fichier copié de FAT32 vers NTFS crypté, quel sera son état ?", opts: ["Crypté", "Non crypté", "Compressé", "Supprimé"], ans: 1 },
+      { num: 13, topic: "Windows Server / AD", q: "Quelle commande importe des utilisateurs depuis un fichier CSV dans AD ?", opts: ["LDIFDE", "DSADD User", "CSVDE", "NTDSUTIL"], ans: 2 },
+      { num: 14, topic: "Windows Server / AD", q: "Quel type de sauvegarde restaure uniquement les données modifiées depuis la dernière sauvegarde complète ?", opts: ["Sauvegarde complète", "Sauvegarde différentielle", "Sauvegarde incrémentielle", "Sauvegarde ASR"], ans: 2 },
+      { num: 15, topic: "Linux", q: "Quelle commande bloque un compte utilisateur sans le supprimer ?", opts: ["passwd -u user1", "usermod -L user1", "userdel user1", "chmod 000 /home/user1"], ans: 1 },
+      { num: 16, topic: "Linux", q: "Quel répertoire contient les fichiers de configuration du système ?", opts: ["/bin", "/etc", "/var", "/usr"], ans: 1 },
+      { num: 17, topic: "Linux", q: "Quelle commande affiche les processus en temps réel ?", opts: ["ps aux", "jobs", "top", "ls -l"], ans: 2 },
+      { num: 18, topic: "Linux", q: "Quelle commande programme un arrêt du système dans 30 minutes ?", opts: ["shutdown -h +30", "init 0 -t 30", "halt -t 30", "poweroff -30"], ans: 0 },
+      { num: 19, topic: "Linux", q: "Quel est le rôle du répertoire /lost+found ?", opts: ["Stocker les fichiers temporaires", "Récupérer les clusters endommagés par fsck", "Contenir les fichiers supprimés", "Sauvegarder les journaux"], ans: 1 },
+      { num: 20, topic: "Linux", q: "Quelle commande modifie les permissions d'un fichier ?", opts: ["chown", "chmod", "chgrp", "setperm"], ans: 1 },
+      { num: 21, topic: "Sécurité réseau", q: "Quelle solution NAT permet d'accéder à un serveur FTP interne depuis l'extérieur ?", opts: ["NAT dynamique", "NAT statique", "Transmission de ports", "NAT avec surcharge"], ans: 2 },
+      { num: 22, topic: "Sécurité réseau", q: "Quel protocole sécurise les communications web par chiffrement ?", opts: ["FTP", "HTTP", "TLS/SSL", "SNMP"], ans: 2 },
+      { num: 23, topic: "Sécurité réseau", q: "Qu'est-ce qu'une attaque Man-in-the-Middle (MITM) ?", opts: ["Surcharge d'un serveur", "Interception des communications entre deux parties", "Injection SQL", "Phishing"], ans: 1 },
+      { num: 24, topic: "Sécurité réseau", q: "Quel protocole remplace Telnet pour l'administration sécurisée à distance ?", opts: ["FTP", "RDP", "SSH", "SNMP"], ans: 2 },
+      { num: 25, topic: "Sécurité réseau", q: "Quel pare-feu analyse le contenu des paquets au niveau applicatif ?", opts: ["Filtrage de paquets", "Inspection d'état", "Pare-feu applicatif (WAF)", "Pare-feu réseau simple"], ans: 2 },
+      { num: 26, topic: "Développement", q: "Quelle méthode HTTP crée une ressource sur le serveur ?", opts: ["GET", "DELETE", "PUT", "POST"], ans: 3 },
+      { num: 27, topic: "Développement", q: "Qu'est-ce qu'une API REST ?", opts: ["Un langage de programmation", "Une interface basée sur HTTP et les ressources", "Un protocole de transfert de fichiers", "Un SGBD"], ans: 1 },
+      { num: 28, topic: "Développement", q: "Quel est le rôle d'un ORM ?", opts: ["Gérer les connexions réseau", "Faire correspondre objets de code aux tables BD", "Compiler le code source", "Sécuriser les accès"], ans: 1 },
+      { num: 29, topic: "Développement", q: "Dans le modèle MVC, quel composant gère la logique métier ?", opts: ["View (Vue)", "Controller (Contrôleur)", "Model (Modèle)", "Router (Routeur)"], ans: 2 },
+      { num: 30, topic: "Développement", q: "Quel type de base de données stocke les données en documents JSON ?", opts: ["Base relationnelle (SQL)", "Base clé-valeur", "Base orientée document (NoSQL)", "Base en colonnes"], ans: 2 },
+    ];
+
+    const topicColors = {
+      "Réseau / TCP-IP": "#3B82F6",
+      "Windows Server / AD": "#8B5CF6",
+      "Linux": "#F59E0B",
+      "Sécurité réseau": "#EF4444",
+      "Développement": "#10B981",
+    };
+    const topicIcons = {
+      "Réseau / TCP-IP": "🌐",
+      "Windows Server / AD": "🖥️",
+      "Linux": "🐧",
+      "Sécurité réseau": "🔐",
+      "Développement": "💻",
+    };
+
+    function Quiz() {
+      const [current, setCurrent] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [answers, setAnswers] = useState([]);
+      const [showResult, setShowResult] = useState(false);
+      const [confirmed, setConfirmed] = useState(false);
+
+      const q = questions[current];
+      const color = topicColors[q.topic];
+      const progress = (current / questions.length) * 100;
+
+      const handleSelect = (i) => { if (!confirmed) setSelected(i); };
+      const handleConfirm = () => { if (selected !== null) setConfirmed(true); };
+      const handleNext = () => {
+        const newAnswers = [...answers, { question: current, chosen: selected, correct: q.ans }];
+        setAnswers(newAnswers);
+        if (current + 1 >= questions.length) { setShowResult(true); }
+        else { setCurrent(current + 1); setSelected(null); setConfirmed(false); }
+      };
+
+      const score = answers.filter(a => a.chosen === a.correct).length;
+      const getGrade = (s) => {
+        const pct = (s / questions.length) * 100;
+        if (pct >= 90) return { label: "Excellent! 🏆", color: "#10B981" };
+        if (pct >= 75) return { label: "Très bien! 🎉", color: "#3B82F6" };
+        if (pct >= 60) return { label: "Bien 👍", color: "#F59E0B" };
+        if (pct >= 50) return { label: "Passable 😐", color: "#F97316" };
+        return { label: "À revoir 📚", color: "#EF4444" };
+      };
+
+      const topicStats = Object.keys(topicColors).map(topic => {
+        const qs = questions.filter(q => q.topic === topic);
+        const correct = answers.filter((a, i) => questions[i] && questions[i].topic === topic && a.chosen === a.correct).length;
+        return { topic, correct, total: qs.length };
+      });
+
+      if (showResult) {
+        const grade = getGrade(score);
+        return (
+          <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',sans-serif",padding:"20px"}}>
+            <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",borderRadius:"24px",padding:"40px",maxWidth:"600px",width:"100%",border:"1px solid rgba(255,255,255,0.1)",boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
+              <div style={{textAlign:"center",marginBottom:"32px"}}>
+                <div style={{fontSize:"64px",marginBottom:"12px"}}>🎯</div>
+                <h1 style={{color:"#fff",fontSize:"28px",fontWeight:"800",margin:"0 0 8px"}}>Résultats</h1>
+                <div style={{fontSize:"56px",fontWeight:"900",color:grade.color,margin:"12px 0"}}>{score}<span style={{fontSize:"28px",color:"rgba(255,255,255,0.5)"}}>/{questions.length}</span></div>
+                <div style={{display:"inline-block",background:grade.color+"22",border:`2px solid ${grade.color}`,color:grade.color,borderRadius:"100px",padding:"8px 24px",fontWeight:"700",fontSize:"18px"}}>{grade.label}</div>
+                <div style={{color:"rgba(255,255,255,0.5)",marginTop:"8px",fontSize:"15px"}}>{Math.round((score/questions.length)*100)}% de bonnes réponses</div>
+              </div>
+              <div style={{marginBottom:"28px"}}>
+                <h3 style={{color:"rgba(255,255,255,0.7)",fontSize:"14px",fontWeight:"600",textTransform:"uppercase",letterSpacing:"2px",marginBottom:"16px"}}>Par thème</h3>
+                {topicStats.map(({topic,correct,total}) => (
+                  <div key={topic} style={{marginBottom:"12px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:"6px"}}>
+                      <span style={{color:"#fff",fontSize:"14px"}}>{topicIcons[topic]} {topic}</span>
+                      <span style={{color:topicColors[topic],fontWeight:"700",fontSize:"14px"}}>{correct}/{total}</span>
+                    </div>
+                    <div style={{background:"rgba(255,255,255,0.1)",borderRadius:"100px",height:"6px"}}>
+                      <div style={{background:topicColors[topic],borderRadius:"100px",height:"100%",width:`${(correct/total)*100}%`}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={()=>{setCurrent(0);setSelected(null);setAnswers([]);setShowResult(false);setConfirmed(false);}}
+                style={{width:"100%",padding:"14px",background:"linear-gradient(90deg,#6366f1,#8b5cf6)",border:"none",borderRadius:"12px",color:"#fff",fontSize:"16px",fontWeight:"700",cursor:"pointer"}}>
+                🔁 Recommencer
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',sans-serif",padding:"20px"}}>
+          <div style={{maxWidth:"680px",width:"100%"}}>
+            <div style={{marginBottom:"20px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",color:"rgba(255,255,255,0.5)",fontSize:"13px",marginBottom:"8px"}}>
+                <span>Question {current+1} / {questions.length}</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.1)",borderRadius:"100px",height:"6px"}}>
+                <div style={{background:color,borderRadius:"100px",height:"100%",width:`${progress}%`,transition:"width 0.5s ease"}}/>
+              </div>
+            </div>
+            <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(20px)",borderRadius:"24px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
+              <div style={{background:color+"22",borderBottom:`3px solid ${color}`,padding:"12px 28px",display:"flex",alignItems:"center",gap:"8px"}}>
+                <span style={{fontSize:"18px"}}>{topicIcons[q.topic]}</span>
+                <span style={{color:color,fontWeight:"700",fontSize:"13px",textTransform:"uppercase",letterSpacing:"1.5px"}}>{q.topic}</span>
+              </div>
+              <div style={{padding:"32px 28px"}}>
+                <h2 style={{color:"#fff",fontSize:"20px",fontWeight:"700",lineHeight:"1.5",marginBottom:"28px"}}>{q.q}</h2>
+                <div style={{display:"flex",flexDirection:"column",gap:"12px",marginBottom:"28px"}}>
+                  {q.opts.map((opt,i) => {
+                    let bg="rgba(255,255,255,0.05)",border="1px solid rgba(255,255,255,0.1)",textColor="rgba(255,255,255,0.85)";
+                    if(confirmed){
+                      if(i===q.ans){bg="#10B98122";border="2px solid #10B981";textColor="#10B981";}
+                      else if(i===selected&&i!==q.ans){bg="#EF444422";border="2px solid #EF4444";textColor="#EF4444";}
+                    } else if(selected===i){bg=color+"33";border=`2px solid ${color}`;textColor="#fff";}
+                    return (
+                      <button key={i} onClick={()=>handleSelect(i)}
+                        style={{background:bg,border,borderRadius:"12px",padding:"14px 18px",color:textColor,fontSize:"15px",textAlign:"left",cursor:confirmed?"default":"pointer",transition:"all 0.2s",display:"flex",alignItems:"center",gap:"12px",width:"100%"}}>
+                        <span style={{width:"28px",height:"28px",borderRadius:"50%",background:"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontSize:"13px",flexShrink:0}}>
+                          {confirmed&&i===q.ans?"✓":confirmed&&i===selected&&i!==q.ans?"✗":String.fromCharCode(65+i)}
+                        </span>
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+                {!confirmed
+                  ? <button onClick={handleConfirm} disabled={selected===null}
+                      style={{width:"100%",padding:"14px",background:selected!==null?`linear-gradient(90deg,${color},${color}cc)`:"rgba(255,255,255,0.1)",border:"none",borderRadius:"12px",color:selected!==null?"#fff":"rgba(255,255,255,0.3)",fontSize:"16px",fontWeight:"700",cursor:selected!==null?"pointer":"not-allowed"}}>
+                      Valider ma réponse
+                    </button>
+                  : <button onClick={handleNext}
+                      style={{width:"100%",padding:"14px",background:"linear-gradient(90deg,#6366f1,#8b5cf6)",border:"none",borderRadius:"12px",color:"#fff",fontSize:"16px",fontWeight:"700",cursor:"pointer"}}>
+                      {current+1>=questions.length?"Voir mes résultats 🎯":"Question suivante →"}
+                    </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Quiz />);
+  </script>
+</body>
+</html>
